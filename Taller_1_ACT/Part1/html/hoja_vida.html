@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Hoja de Vida</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <img src="../images/Weblogo.png" alt="Logo">
+    <nav>
+      <ul>
+        <li onclick="location.href='bienvenida.html'">Bienvenida</li>
+        <li onclick="location.href='biografia.html'">Biografía</li>
+        <li class="active" onclick="location.href='hoja_vida.html'">Hoja de Vida</li>
+        <li onclick="location.href='interes.html'">Material de Interés</li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1 class="titulo">Hoja de Vida</h1>
+    <!-- Índice con enlaces internos -->
+    <div class="indice">
+      <strong>Índice:</strong>
+      <ul>
+        <li><a href="#exp">Experiencia Laboral</a></li>
+        <li><a href="#estudios">Estudios</a></li>
+        <li><a href="#proyectos">Proyectos</a></li>
+        <li><a href="#habilidades">Habilidades Técnicas</a></li>
+        <li><a href="#liderazgo">Liderazgo y Premios</a></li>
+      </ul>
+    </div>
+    <!-- Secciones con borde y gradiente -->
+    <div class="seccion" id="exp">
+      <h2>Experiencia Laboral</h2>
+      <ol class="custom-numbers">
+        <li>Ingeniero de Software Interno en FEMSA <br><span style="color:#333;">Agosto 2024 - Presente</span></li>
+        <li>Desarrollador Frontend en Oserca <br><span style="color:#333;">Mayo 2024</span></li>
+      </ol>
+    </div>
+    <div class="seccion" id="estudios">
+      <h2>Estudios</h2>
+      <ul class="custom-bullets">
+        <li>Tecnológico de Monterrey Guadalajara, México - B.Sc. en Ciencias de la Computación <br><span style="color:#333;">Agosto 2022 - Junio 2026 (Esperado)</span></li>
+        <li>Escuela Federal de Bachilleres Lázaro Cárdenas Tijuana, México - Diploma en Tecnología de la Información y Comunicación <br><span style="color:#333;">Agosto 2019 - Julio 2022</span></li>
+      </ul>
+    </div>
+    <div class="seccion" id="proyectos">
+      <h2>Proyectos</h2>
+      <ol class="custom-numbers">
+        <li>WebApp Lingüístico - Abril 2024 - Mayo 2024</li>
+        <li>Proyecto de Optimización de Rutas Cuánticas - Octubre 2023</li>
+        <li>Desarrollo Web para "Vineyards San Valentín" - Mayo 2023</li>
+      </ol>
+    </div>
+    <div class="seccion" id="habilidades">
+      <h2>Habilidades Técnicas</h2>
+      <ul class="custom-bullets">
+        <li>Lenguajes: Python, C++, JavaScript, TypeScript, SQL, HTML/CSS</li>
+        <li>Frameworks: React, Next.js, Node.js, Flask, Django, Express.js, Vite, TailwindCSS</li>
+        <li>Librerías: pandas, NumPy, Matplotlib, TensorFlow, D3.js, deck.gl, Bootstrap, jQuery, Axios</li>
+        <li>Herramientas de Desarrollo: Git, Docker, GCP, AWS, VS Code, Figma</li>
+      </ul>
+    </div>
+    <div class="seccion" id="liderazgo">
+      <h2>Liderazgo y Premios</h2>
+      <ul class="custom-bullets">
+        <li>Líder del Campus, Notion (2024); GoodNotes (2023-2024); Líder de la Clase de 2026 (2024-2026); Mentor Peers (2023-2025)</li>
+        <li>1er Lugar en los Desafíos de Solana (2023)</li>
+      </ul>
+    </div>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <span>&copy;2025 Santos Arellano</span>
+      <a href="https://www.linkedin.com/in/santos-arellano/" target="_blank">Linkedin</a>
+      <a href="https://www.github.com/Santos-Arellano" target="_blank">Github</a>
+      <a href="https://www.instagram.com/arellano_santos" target="_blank">Instagram</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tienda FakeStore</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/tienda.js"></script>
+</head>
+<body>
+  <!-- Header con logo, nombre y carrito -->
+  <header>
+    <div class="header-left">
+      <img src="images/logo.png" alt="Logo Tienda" class="logo">
+      <h1>Tienda FakeStore</h1>
+    </div>
+    <div class="header-right">
+      <div class="cart-container">
+        <img src="images/cart.png" alt="Carrito" id="cart-icon">
+        <span id="cart-count">0</span>
+        <div id="cart-dropdown" class="cart-dropdown">
+          <h2>Carrito de Compras</h2>
+          <table id="cart-table">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Los productos del carrito se insertan aquí -->
+            </tbody>
+          </table>
+          <button id="empty-cart">Vaciar carrito</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Introducción -->
+    <section class="intro">
+      <h2>¡Bienvenido a la mejor tienda online!</h2>
+      <p>Descubre productos increíbles y agrégalos a tu carrito. ¡Explora, compra y disfruta!</p>
+    </section>
+
+    <!-- Sección de tienda -->
+    <section class="tienda">
+      <h2>Productos</h2>
+      <div id="productos" class="productos-grid">
+        <!-- Las tarjetas de productos se insertan aquí -->
+      </div>
+    </section>
+
+    <!-- Formulario para agregar artículo -->
+    <section class="agregar-articulo">
+      <h2>Agregar nuevo artículo</h2>
+      <form id="form-agregar">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="number" id="precio" placeholder="Precio" required>
+        <input type="url" id="imagen" placeholder="URL de la imagen" required>
+        <input type="text" id="categoria" placeholder="Categoría" required>
+        <input type="text" id="descripcion" placeholder="Descripción" required>
+        <input type="text" id="marca" placeholder="Marca" required>
+        <button type="submit">Agregar artículo</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Tienda FakeStore. Todos los derechos reservados.</p>
+  </footer>
+</body>
+</html>
