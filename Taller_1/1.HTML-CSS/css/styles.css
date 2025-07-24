@@ -1,0 +1,303 @@
+/*selectores*/
+
+ul {
+  background-color: black;
+}
+
+.small {
+  font-size: 14px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+#top-songs {
+  font-style: italic;
+}
+
+/*Otros selectores*/
+
+* {
+  /*border: 1px solid red;*/
+}
+
+.small.text-center {
+  line-height: 15px;
+}
+
+p.text-center {
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+h1,
+h3 {
+  text-align: center;
+}
+
+ul li {
+  list-style-type: none;
+  color: white;
+}
+
+header,
+footer {
+  background-color: black;
+}
+
+header > h2,
+footer p {
+  color: white;
+}
+
+header li:hover {
+  font-size: 17px;
+  text-decoration: underline;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+footer a:visited {
+  color: white;
+}
+
+p {
+  margin: 10px;
+  padding: 10px;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+header h2 {
+  margin: 0;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+  align-items: center;
+}
+
+header ul {
+  display: flex;
+  margin: 0;
+}
+
+table {
+  width: 50%;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  display: flex;
+  /*width: 48%;*/
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 3px;
+  /*margin: 6px;*/
+}
+
+.artist {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+}
+
+#social {
+  display: flex;
+  flex-grow: 1;
+  justify-content: end;
+}
+
+#social a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 10px;
+}
+
+#social p {
+  margin: 0;
+}
+
+#presentation {
+  height: 500px;
+  background-image: url("../images/background.jpg");
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#presentation * {
+  color: white;
+}
+
+#presentation h1 {
+  font-size: 50px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  margin: 10px;
+}
+
+/* Dispositivos pequeños (teléfonos horizontales, 576px y más)*/
+@media (min-width: 576px) {
+}
+
+/* Dispositivos medianos (tabletas, 768px y más)*/
+@media (min-width: 768px) {
+  .col-md-1 {
+    width: 8.33%;
+  }
+  .col-md-2 {
+    width: 16.66%;
+  }
+  .col-md-3 {
+    width: 25%;
+  }
+  .col-md-4 {
+    width: 33.33%;
+  }
+  .col-md-5 {
+    width: 41.66%;
+  }
+  .col-md-6 {
+    width: 50%;
+  }
+  .col-md-7 {
+    width: 58.33%;
+  }
+  .col-md-8 {
+    width: 66.66%;
+  }
+  .col-md-9 {
+    width: 74.99%;
+  }
+  .col-md-10 {
+    width: 83.33%;
+  }
+  .col-md-11 {
+    width: 91.66%;
+  }
+  .col-md-12 {
+    width: 100%;
+  }
+}
+
+/* Dispositivos grandes (escritorios, 992px y más)*/
+@media (min-width: 992px) {
+  .col-gr-1 {
+    width: 8.33%;
+  }
+  .col-gr-2 {
+    width: 16.66%;
+  }
+  .col-gr-3 {
+    width: 25%;
+  }
+  .col-gr-4 {
+    width: 33.33%;
+  }
+  .col-gr-5 {
+    width: 41.66%;
+  }
+  .col-gr-6 {
+    width: 50%;
+  }
+  .col-gr-7 {
+    width: 58.33%;
+  }
+  .col-gr-8 {
+    width: 66.66%;
+  }
+  .col-gr-9 {
+    width: 74.99%;
+  }
+  .col-gr-10 {
+    width: 83.33%;
+  }
+  .col-gr-11 {
+    width: 91.66%;
+  }
+  .col-gr-12 {
+    width: 100%;
+  }
+}
+
+/* Dispositivos X-Large (escritorios grandes, 1200px y más)*/
+@media (min-width: 1200px) {
+  .col-xlg-1 {
+    width: 8.33%;
+  }
+  .col-xlg-2 {
+    width: 16.66%;
+  }
+  .col-xlg-3 {
+    width: 25%;
+  }
+  .col-xlg-4 {
+    width: 33.33%;
+  }
+  .col-xlg-5 {
+    width: 41.66%;
+  }
+  .col-xlg-6 {
+    width: 50%;
+  }
+  .col-xlg-7 {
+    width: 58.33%;
+  }
+  .col-xlg-8 {
+    width: 66.66%;
+  }
+  .col-xlg-9 {
+    width: 74.99%;
+  }
+  .col-xlg-10 {
+    width: 83.33%;
+  }
+  .col-xlg-11 {
+    width: 91.66%;
+  }
+  .col-xlg-12 {
+    width: 100%;
+  }
+}
+
+/* Dispositivos XX-Large (escritorios más grandes, 1400px y más)*/
+@media (min-width: 1400px) {
+}
+
+/*Estilos adicionales*/
+header li {
+  margin: 0px 5px;
+}
+
+article div {
+  padding-left: 10px;
+}
