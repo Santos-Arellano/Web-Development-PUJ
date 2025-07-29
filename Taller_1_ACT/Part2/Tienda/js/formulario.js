@@ -1,7 +1,6 @@
 // ===================================
 // ARCHIVO: js/formulario.js
 // DESCRIPCIÓN: Lógica para el formulario de agregar productos
-// AUTOR: Estudiante - Taller Programación Web
 // ===================================
 
 /**

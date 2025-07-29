@@ -1,7 +1,6 @@
 // ===================================
 // ARCHIVO: js/carrito.js
 // DESCRIPCIÓN: Gestión del carrito de compras
-// AUTOR: Estudiante - Taller Programación Web
 // ===================================
 
 /**

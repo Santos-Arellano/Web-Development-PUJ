@@ -1,7 +1,6 @@
 // ===================================
 // ARCHIVO: js/notificaciones.js
 // DESCRIPCIÓN: Sistema de notificaciones toast
-// AUTOR: Estudiante - Taller Programación Web
 // ===================================
 
 /**

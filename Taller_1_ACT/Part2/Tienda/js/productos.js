@@ -1,7 +1,6 @@
 // ===================================
 // ARCHIVO: js/productos.js
 // DESCRIPCIÓN: Gestión de productos de la tienda
-// AUTOR: Estudiante - Taller Programación Web
 // ===================================
 
 /**

@@ -1,7 +1,6 @@
 // ===================================
 // ARCHIVO: js/main.js
 // DESCRIPCIÓN: Inicialización global de la tienda
-// AUTOR: Estudiante - Taller Programación Web
 // ===================================
 
 /**
