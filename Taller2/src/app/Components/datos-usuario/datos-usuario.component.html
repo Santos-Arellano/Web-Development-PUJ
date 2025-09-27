@@ -1,0 +1,127 @@
+<div class="user-profile">
+  <h2>Datos del Usuario</h2>
+  
+  <ng-container *ngIf="usuario">
+    <!-- Imagen del usuario -->
+    <div class="user-image" *ngIf="usuario?.image">
+      <img [src]="usuario.image" [alt]="usuario.firstName + ' ' + usuario.lastName" />
+    </div>
+
+    <!-- Información Personal -->
+    <div class="section">
+      <h3>👤 Información Personal</h3>
+      <ul>
+        <li><strong>ID:</strong> {{ usuario?.id }}</li>
+        <li><strong>Nombre:</strong> {{ usuario?.firstName }} {{ usuario?.lastName }}</li>
+        <li><strong>Nombre de soltera:</strong> {{ usuario?.maidenName }}</li>
+        <li><strong>Username:</strong> {{ usuario?.username }}</li>
+        <li><strong>Edad:</strong> {{ usuario?.age }} años</li>
+        <li><strong>Género:</strong> {{ usuario?.gender }}</li>
+        <li><strong>Fecha de nacimiento:</strong> {{ usuario?.birthDate }}</li>
+        <li><strong>Rol:</strong> {{ usuario?.role }}</li>
+      </ul>
+    </div>
+
+    <!-- Información de Contacto -->
+    <div class="section">
+      <h3>📞 Contacto</h3>
+      <ul>
+        <li><strong>Email:</strong> {{ usuario?.email }}</li>
+        <li><strong>Teléfono:</strong> {{ usuario?.phone }}</li>
+      </ul>
+    </div>
+
+    <!-- Características Físicas -->
+    <div class="section">
+      <h3>🏃‍♂️ Características Físicas</h3>
+      <ul>
+        <li><strong>Altura:</strong> {{ usuario?.height }} cm</li>
+        <li><strong>Peso:</strong> {{ usuario?.weight }} kg</li>
+        <li><strong>Color de ojos:</strong> {{ usuario?.eyeColor }}</li>
+        <li><strong>Cabello:</strong> {{ usuario?.hair?.color }} - {{ usuario?.hair?.type }}</li>
+        <li><strong>Tipo de sangre:</strong> {{ usuario?.bloodGroup }}</li>
+      </ul>
+    </div>
+
+    <!-- Dirección -->
+    <div class="section">
+      <h3>🏠 Dirección</h3>
+      <ul>
+        <li><strong>Dirección:</strong> {{ usuario?.address?.address }}</li>
+        <li><strong>Ciudad:</strong> {{ usuario?.address?.city }}</li>
+        <li><strong>Estado:</strong> {{ usuario?.address?.state }} ({{ usuario?.address?.stateCode }})</li>
+        <li><strong>Código postal:</strong> {{ usuario?.address?.postalCode }}</li>
+        <li><strong>País:</strong> {{ usuario?.address?.country }}</li>
+        <li><strong>Coordenadas:</strong> 
+          Lat: {{ usuario?.address?.coordinates?.lat }}, 
+          Lng: {{ usuario?.address?.coordinates?.lng }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Información Laboral -->
+    <div class="section" *ngIf="usuario?.company">
+      <h3>🏢 Información Laboral</h3>
+      <ul>
+        <li><strong>Empresa:</strong> {{ usuario?.company?.name }}</li>
+        <li><strong>Departamento:</strong> {{ usuario?.company?.department }}</li>
+        <li><strong>Cargo:</strong> {{ usuario?.company?.title }}</li>
+        <li *ngIf="usuario?.company?.address"><strong>Dirección de la empresa:</strong> 
+          {{ usuario?.company?.address?.address }}, 
+          {{ usuario?.company?.address?.city }}, 
+          {{ usuario?.company?.address?.state }} 
+          {{ usuario?.company?.address?.postalCode }}, 
+          {{ usuario?.company?.address?.country }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Educación -->
+    <div class="section" *ngIf="usuario?.university">
+      <h3>🎓 Educación</h3>
+      <ul>
+        <li><strong>Universidad:</strong> {{ usuario?.university }}</li>
+      </ul>
+    </div>
+
+    <!-- Información Bancaria -->
+    <div class="section" *ngIf="usuario?.bank">
+      <h3>💳 Información Bancaria</h3>
+      <ul>
+        <li><strong>Tipo de tarjeta:</strong> {{ usuario?.bank?.cardType }}</li>
+        <li><strong>Número de tarjeta:</strong> **** **** **** {{ usuario?.bank?.cardNumber?.slice(-4) }}</li>
+        <li><strong>Fecha de expiración:</strong> {{ usuario?.bank?.cardExpire }}</li>
+        <li><strong>Moneda:</strong> {{ usuario?.bank?.currency }}</li>
+        <li><strong>IBAN:</strong> {{ usuario?.bank?.iban }}</li>
+      </ul>
+    </div>
+
+    <!-- Criptomonedas -->
+    <div class="section" *ngIf="usuario?.crypto">
+      <h3>₿ Criptomonedas</h3>
+      <ul>
+        <li><strong>Moneda:</strong> {{ usuario?.crypto?.coin }}</li>
+        <li><strong>Wallet:</strong> {{ usuario?.crypto?.wallet }}</li>
+        <li><strong>Red:</strong> {{ usuario?.crypto?.network }}</li>
+      </ul>
+    </div>
+
+    <!-- Información Técnica -->
+    <div class="section">
+      <h3>🔧 Información Técnica</h3>
+      <ul>
+        <li><strong>IP:</strong> {{ usuario?.ip }}</li>
+        <li><strong>MAC Address:</strong> {{ usuario?.macAddress }}</li>
+        <li><strong>User Agent:</strong> {{ usuario?.userAgent }}</li>
+        <li><strong>EIN:</strong> {{ usuario?.ein }}</li>
+        <li><strong>SSN:</strong> {{ usuario?.ssn }}</li>
+      </ul>
+    </div>
+
+  </ng-container>
+
+  <!-- Mensaje cuando no hay usuario -->
+  <div *ngIf="!usuario" class="no-user">
+    <p>No se ha seleccionado ningún usuario o no se pudo cargar la información.</p>
+  </div>
+</div>

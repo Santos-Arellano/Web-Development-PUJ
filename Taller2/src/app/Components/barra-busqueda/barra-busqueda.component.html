@@ -1,0 +1,54 @@
+<div class="search-container">
+  <h1>Busca nuestros usuarios</h1>
+  
+  <!-- Formulario de búsqueda -->
+  <div class="search-form">
+    <input 
+      type="text" 
+      name="usuario" 
+      placeholder="Ingresa un username (ej: emilys)" 
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="buscarUsuario()"
+      [disabled]="loading">
+    
+    <div class="button-group">
+      <button 
+        (click)="buscarUsuario()" 
+        [disabled]="loading || !searchQuery.trim()"
+        class="search-btn">
+        <span *ngIf="!loading">🔍 Buscar</span>
+        <span *ngIf="loading">⏳ Buscando...</span>
+      </button>
+      
+      <button 
+        (click)="limpiarBusqueda()" 
+        class="clear-btn"
+        *ngIf="searchQuery || usuarioEncontrado || errorMsg">
+        🗑️ Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="error-message" *ngIf="errorMsg">
+    ⚠️ {{ errorMsg }}
+  </div>
+
+  <!-- Estado de carga -->
+  <div class="loading-message" *ngIf="loading">
+    <p>Buscando usuario...</p>
+  </div>
+
+  <!-- Mostrar datos del usuario encontrado -->
+  <div *ngIf="usuarioEncontrado && !loading">
+    <!-- Relación Padre - Hijo -->
+    <!-- usuario es el hijo y usuarioEncontrado es el padre -->
+    <app-datos-usuario [usuario]="usuarioEncontrado"></app-datos-usuario>
+  </div>
+
+  <!-- Mensaje cuando no hay búsqueda -->
+  <div class="no-search" *ngIf="!searchQuery && !usuarioEncontrado && !errorMsg && !loading">
+    <p>💡 Ingresa un username para buscar información del usuario</p>
+    <p><small>Prueba con: <strong>emilys</strong>, <strong>michaelw</strong>, o <strong>sophiab</strong></small></p>
+  </div>
+</div>

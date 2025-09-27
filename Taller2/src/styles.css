@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importar fuente Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* Estilos globales */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #d1cbcb;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+/* Mejorar scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a4d1a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #145a14;
+}
+
+/* Animaciones suaves */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Estilos para botones generales */
+button {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Mejorar inputs */
+input, textarea, select {
+  font-family: 'Poppins', sans-serif;
+}

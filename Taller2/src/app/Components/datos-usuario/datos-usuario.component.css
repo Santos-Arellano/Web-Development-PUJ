@@ -1,0 +1,193 @@
+/* Contenedor principal */
+.user-profile {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.user-profile h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a4d1a;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Imagen del usuario */
+.user-image {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-image img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 4px solid #1a4d1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+/* Secciones */
+.section {
+  background-color: #ffffffc2;
+  margin-bottom: 20px;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a4d1a;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Listas */
+.section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 10px;
+}
+
+.section li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.section li:last-child {
+  border-bottom: none;
+}
+
+.section li strong {
+  color: #1a4d1a;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 140px;
+}
+
+/* Sección de información personal */
+.section:nth-child(2) {
+  border-left: 4px solid #1a4d1a;
+}
+
+/* Sección de contacto */
+.section:nth-child(3) {
+  border-left: 4px solid #2563eb;
+}
+
+/* Sección de características físicas */
+.section:nth-child(4) {
+  border-left: 4px solid #dc2626;
+}
+
+/* Sección de dirección */
+.section:nth-child(5) {
+  border-left: 4px solid #ea580c;
+}
+
+/* Sección laboral */
+.section:nth-child(6) {
+  border-left: 4px solid #7c3aed;
+}
+
+/* Sección de educación */
+.section:nth-child(7) {
+  border-left: 4px solid #059669;
+}
+
+/* Sección bancaria */
+.section:nth-child(8) {
+  border-left: 4px solid #db2777;
+}
+
+/* Sección de criptomonedas */
+.section:nth-child(9) {
+  border-left: 4px solid #f59e0b;
+}
+
+/* Sección técnica */
+.section:nth-child(10) {
+  border-left: 4px solid #6b7280;
+}
+
+/* Mensaje cuando no hay usuario */
+.no-user {
+  text-align: center;
+  padding: 40px;
+  background-color: #ffffffc2;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-user p {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-profile {
+    padding: 15px;
+  }
+  
+  .user-profile h2 {
+    font-size: 24px;
+  }
+  
+  .section {
+    padding: 20px 15px;
+  }
+  
+  .section ul {
+    grid-template-columns: 1fr;
+  }
+  
+  .section li strong {
+    min-width: auto;
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .user-image img {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-profile {
+    padding: 10px;
+  }
+  
+  .section {
+    margin-bottom: 15px;
+    padding: 15px 12px;
+  }
+  
+  .section h3 {
+    font-size: 18px;
+  }
+  
+  .section li {
+    font-size: 13px;
+  }
+}
