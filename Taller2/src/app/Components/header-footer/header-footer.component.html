@@ -1,27 +1,27 @@
 <!-- src/app/Components/header-footer/header-footer.component.html -->
-<!-- Footer -->
+<!-- Header -->
 <header>
   <!-- Navbar -->
   <nav class="navbar">
 
     <div class="navbar-container">
       <!-- Logo/Brand -->
-      <div class="logo-section">
+      <div class="logo-section" (click)="scrollTo('top')" style="cursor: pointer;">
         <h1 class="logo-text">FaceScreen</h1>
         <span class="logo-subtitle">Tu red social</span>
       </div>
       
       <!-- Navigation Links -->
       <div class="nav-links">
-        <a href="#" class="nav-link active">
+        <a href="#usuarios" class="nav-link" [class.active]="active==='usuarios'" (click)="setActive('usuarios'); scrollTo('usuarios-section'); $event.preventDefault()">
           <i class="icon">👤</i>
           <span>Usuarios</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="#publicaciones" class="nav-link" [class.active]="active==='publicaciones'" (click)="setActive('publicaciones'); scrollTo('posts-section'); $event.preventDefault()">
           <i class="icon">📝</i>
           <span>Publicaciones</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="#buscar" class="nav-link" [class.active]="active==='buscar'" (click)="setActive('buscar'); scrollTo('buscar-section'); $event.preventDefault()">
           <i class="icon">🔍</i>
           <span>Buscar</span>
         </a>
@@ -29,19 +29,42 @@
       
       <!-- User Actions -->
       <div class="user-actions">
-        <button class="action-btn notification-btn">
+        <button class="action-btn notification-btn" (click)="toggleNotifications()">
           <i class="icon">🔔</i>
-          <span class="notification-badge">3</span>
+          <span class="notification-badge" *ngIf="notificationsCount > 0">{{ notificationsCount }}</span>
         </button>
-        <button class="action-btn profile-btn">
+        <button class="action-btn profile-btn" title="Marcar como leídas" (click)="markNotificationsAsRead()">
           <i class="icon">⚙️</i>
         </button>
       </div>
     </div>
+
+    <!-- Dropdown simple de notificaciones -->
+    <div class="dropdown" *ngIf="showNotifications" style="position: absolute; right: 30px; top: 60px; background: white; color: #1a1a1a; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); min-width: 260px;">
+      <div style="padding: 10px 12px; border-bottom: 1px solid #eee; font-weight: 600;">Notificaciones</div>
+      <ng-container *ngIf="notifications.length; else noNotifs">
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li *ngFor="let n of notifications" style="padding: 10px 12px; border-bottom: 1px solid #f0f0f0;">
+            🔔 {{ n.text }}
+          </li>
+        </ul>
+        <div style="padding: 10px; text-align: right;">
+          <button class="btn btn-sm btn-outline-success" (click)="markNotificationsAsRead()">Marcar como leídas</button>
+        </div>
+      </ng-container>
+      <ng-template #noNotifs>
+        <div style="padding: 12px; color: #666;">No tienes notificaciones.</div>
+      </ng-template>
+    </div>
   </nav>
 </header>
 
-<app-barra-busqueda></app-barra-busqueda>
+<!-- Sección de búsqueda y contenido principal -->
+<section id="buscar-section">
+  <app-barra-busqueda></app-barra-busqueda>
+</section>
+
+<!-- Secciones ancla para navegación: ahora se renderizan dentro de barra-busqueda cuando hay resultados -->
 
 <!-- Footer -->
 <footer class="app-footer">
@@ -65,10 +88,10 @@
       <div class="footer-section">
         <h4 class="section-title">Enlaces Rápidos</h4>
         <ul class="footer-links">
-          <li><a href="#">Usuarios Populares</a></li>
-          <li><a href="#">Posts Recientes</a></li>
-          <li><a href="#">Buscar Usuarios</a></li>
-          <li><a href="#">Estadísticas</a></li>
+          <li><a href="#usuarios" (click)="scrollTo('usuarios-section')">Usuarios Populares</a></li>
+          <li><a href="#publicaciones" (click)="scrollTo('posts-section')">Posts Recientes</a></li>
+          <li><a href="#buscar" (click)="scrollTo('buscar-section')">Buscar Usuarios</a></li>
+          <li><a href="#" (click)="$event.preventDefault()">Estadísticas</a></li>
         </ul>
       </div>
       
@@ -76,10 +99,10 @@
       <div class="footer-section">
         <h4 class="section-title">Soporte</h4>
         <ul class="footer-links">
-          <li><a href="#">Centro de Ayuda</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Términos de Uso</a></li>
-          <li><a href="#">Contacto</a></li>
+          <li><a href="#" (click)="$event.preventDefault()">Centro de Ayuda</a></li>
+          <li><a href="#" (click)="$event.preventDefault()">Política de Privacidad</a></li>
+          <li><a href="#" (click)="$event.preventDefault()">Términos de Uso</a></li>
+          <li><a href="#" (click)="$event.preventDefault()">Contacto</a></li>
         </ul>
       </div>
       

@@ -43,7 +43,14 @@
   <div *ngIf="usuarioEncontrado && !loading">
     <!-- Relación Padre - Hijo -->
     <!-- usuario es el hijo y usuarioEncontrado es el padre -->
-    <app-datos-usuario [usuario]="usuarioEncontrado"></app-datos-usuario>
+    <section id="usuarios-section">
+      <app-datos-usuario [usuario]="usuarioEncontrado"></app-datos-usuario>
+    </section>
+
+    <!-- Posts del usuario -->
+    <section id="posts-section" class="mt-4">
+      <app-posts-usuario [usuario]="usuarioEncontrado"></app-posts-usuario>
+    </section>
   </div>
 
   <!-- Mensaje cuando no hay búsqueda -->

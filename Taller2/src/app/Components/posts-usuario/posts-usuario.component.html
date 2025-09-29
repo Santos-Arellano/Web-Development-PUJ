@@ -1,1 +1,79 @@
-<p>posts-usuario works!</p>
+<div class="container my-4" *ngIf="usuario">
+  <h2 class="mb-3">Posts de {{ usuario?.firstName }} {{ usuario?.lastName }}</h2>
+
+  <div *ngIf="cargando" class="alert alert-info">
+    Cargando posts...
+  </div>
+  <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+  <div *ngIf="!cargando && posts.length === 0" class="alert alert-warning">
+    Este usuario no tiene posts.
+  </div>
+
+  <div class="row g-3" *ngIf="!cargando && posts.length > 0">
+    <div class="col-12" *ngFor="let post of posts">
+      <div class="card shadow-sm post-card">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <!-- Autor del post -->
+          <div class="d-flex align-items-center mb-2 text-muted">
+            <i class="bi bi-person-circle me-2"></i>
+            <span>
+              Publicado por: <strong>{{ usuario?.firstName }} {{ usuario?.lastName }}</strong>
+              <span class="ms-1">(@{{ usuario?.username }})</span>
+            </span>
+          </div>
+          <p class="card-text">{{ post.body }}</p>
+
+          <!-- Tags -->
+          <div class="mb-2">
+            <span class="badge bg-success me-1" *ngFor="let tag of post.tags">#{{ tag }}</span>
+          </div>
+
+          <!-- Reacciones y vistas -->
+          <div class="d-flex align-items-center gap-3 reactions">
+            <span class="text-success">
+              <i class="bi bi-hand-thumbs-up-fill"></i>
+              {{ post.reactions?.likes || 0 }}
+            </span>
+            <span class="text-danger">
+              <i class="bi bi-hand-thumbs-down-fill"></i>
+              {{ post.reactions?.dislikes || 0 }}
+            </span>
+            <span class="text-secondary">
+              <i class="bi bi-eye-fill"></i>
+              {{ post.views || 0 }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="card-footer bg-light">
+          <h6 class="mb-2">Comentarios</h6>
+          <div *ngIf="(comentariosPorPost[post.id] || []).length === 0" class="text-muted">
+            No hay comentarios para este post.
+          </div>
+          <ul class="list-group list-group-flush" *ngIf="(comentariosPorPost[post.id] || []).length > 0">
+            <li class="list-group-item" *ngFor="let c of comentariosPorPost[post.id]">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong>{{ c.user.fullName || c.user.username }}</strong>
+                  <span class="text-muted">@{{ c.user.username }}</span>
+                  <p class="mb-1">{{ c.body }}</p>
+                </div>
+                <div class="text-success">
+                  <i class="bi bi-hand-thumbs-up"></i>
+                  {{ c.likes || 0 }}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!usuario" class="container my-4">
+  <div class="alert alert-secondary">Primero busca y selecciona un usuario para ver sus posts.</div>
+</div>

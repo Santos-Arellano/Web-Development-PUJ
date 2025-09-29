@@ -1,0 +1,28 @@
+/* Estilos del componente de posts del usuario */
+.post-card {
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+
+.post-card .card-title {
+  font-weight: 600;
+}
+
+.reactions span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.list-group-item {
+  background-color: #f8f9fa;
+}
+
+.card-footer h6 {
+  font-weight: 600;
+}
