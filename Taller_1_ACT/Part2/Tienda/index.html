@@ -3,74 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda FakeStore - La mejor tienda online</title>
+    <title>Tienda FakeStore</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/notificaciones.js" defer></script>
+    <script src="js/productos.js" defer></script>
+    <script src="js/carrito.js" defer></script>
+    <script src="js/formulario.js" defer></script>
+    <script src="js/main.js" defer></script>
 </head>
 <body>
-    <!-- Header principal con logo, nombre de la tienda y carrito de compras -->
+    <!-- header for the entire page, containing logo, store info, and cart -->
     <header class="header-principal">
         <div class="contenedor-logo">
-            <img src="/Taller_1_ACT/Part2/Tienda/images/logo.png" alt="Logo Tienda FakeStore" class="logo-tienda">
+            <img src="/Taller_1_ACT/Part2/Tienda/images/logo.png" alt="Logo FakeStore" class="logo-tienda">
             <div class="info-tienda">
+                <!-- h1 used as the primary heading for the page -->
                 <h1 class="nombre-tienda">Tienda FakeStore</h1>
                 <p class="eslogan-tienda">Tu tienda de confianza online</p>
             </div>
         </div>
-        
-        <nav class="navegacion-carrito">
-            <div class="contenedor-carrito">
-                <button id="boton-carrito" class="boton-carrito" aria-label="Ver carrito de compras">
-                    <img src="/Taller_1_ACT/Part2/Tienda/images/cart.png" alt="Icono carrito" class="icono-carrito">
-                    <span id="contador-carrito" class="contador-items">0</span>
-                </button>
-                
-                <!-- Dropdown del carrito que aparece al hacer hover -->
-                <div id="dropdown-carrito" class="dropdown-carrito">
-                    <header class="encabezado-carrito">
-                        <h2>🛍️ Mi Carrito de Compras</h2>
-                    </header>
-                    
-                    <section class="contenido-carrito">
-                        <table id="tabla-carrito" class="tabla-productos-carrito">
-                            <thead>
-                                <tr>
-                                    <th>Imagen</th>
-                                    <th>Producto</th>
-                                    <th>Precio</th>
-                                    <th>Cantidad</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cuerpo-tabla-carrito">
-                                <!-- Los productos del carrito se insertan aquí dinámicamente -->
-                            </tbody>
-                        </table>
-                        
-                        <div class="resumen-carrito">
-                            <p class="total-carrito">
-                                <strong>Total: $<span id="total-precio">0</span></strong>
-                            </p>
-                        </div>
-                    </section>
-                    
-                    <footer class="acciones-carrito">
-                        <button id="boton-vaciar-carrito" class="boton-vaciar">
-                            🗑️ Vaciar Carrito
-                        </button>
-                        <button class="boton-comprar">
-                            💳 Proceder al Pago
-                        </button>
-                    </footer>
+        <div class="contenedor-carrito">
+            <button id="boton-carrito" class="boton-carrito">
+                <img src="/Taller_1_ACT/Part2/Tienda/images/cart.png" alt="Carrito" class="icono-carrito">
+                <span id="contador-carrito" class="contador-items">0</span>
+            </button>
+            <!-- Cart dropdown, retained for functionality -->
+            <div id="dropdown-carrito" class="dropdown-carrito">
+                <div class="encabezado-carrito">
+                    <h2>🛍️ Mi Carrito de Compras</h2>
+                </div>
+                <div class="contenido-carrito">
+                    <table id="tabla-carrito" class="tabla-productos-carrito">
+                        <thead>
+                            <tr>
+                                <th>Imagen</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-tabla-carrito"></tbody>
+                    </table>
+                    <div class="resumen-carrito">
+                        <p class="total-carrito">Total: $<span id="total-precio">0</span></p>
+                    </div>
+                </div>
+                <div class="acciones-carrito">
+                    <button id="boton-vaciar-carrito" class="boton-vaciar">🗑️ Vaciar Carrito</button>
+                    <button class="boton-comprar">💳 Proceder al Pago</button>
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <!-- Contenido principal de la página -->
+    <!-- Main element wraps all primary content, improving semantic structure -->
     <main class="contenido-principal">
-        <!-- Sección de introducción y bienvenida -->
+        <!-- Section for the introduction, clearly defining a distinct content block -->
         <section class="seccion-introduccion">
             <div class="contenedor-intro">
+                <!-- h2 for section heading, maintaining heading hierarchy -->
                 <h2 class="titulo-bienvenida">🎉 ¡Bienvenido a FakeStore!</h2>
                 <p class="descripcion-negocio">
                     Descubre la mejor selección de productos de alta calidad al mejor precio. 
@@ -86,119 +78,86 @@
             </div>
         </section>
 
-        <!-- Sección principal de la tienda con productos -->
+        <!-- Section for the product catalog, with products rendered as articles via JS -->
         <section class="seccion-tienda">
-            <header class="encabezado-tienda">
+            <div class="encabezado-tienda">
                 <h2 class="titulo-productos">🛒 Nuestros Productos</h2>
                 <p class="subtitulo-productos">Explora nuestra selección premium</p>
-            </header>
-            
-            <div id="contenedor-productos" class="grid-productos">
-                <!-- Las tarjetas de productos se generan dinámicamente aquí -->
             </div>
-            
-            <div id="indicador-carga" class="indicador-carga">
-                <p>⏳ Cargando productos increíbles...</p>
-            </div>
+            <!-- Container for dynamically generated product cards (articles) -->
+            <div id="contenedor-productos" class="grid-productos"></div>
+            <div id="indicador-carga" class="indicador-carga">⏳ Cargando productos increíbles...</div>
         </section>
 
-        <!-- Sección para agregar nuevos artículos -->
+        <!-- Section for the product addition form -->
         <section class="seccion-agregar-articulo">
-            <header class="encabezado-formulario">
+            <div class="encabezado-formulario">
                 <h2 class="titulo-formulario">➕ Agregar Nuevo Artículo</h2>
-                <p class="descripcion-formulario">
-                    ¿Tienes un producto único? ¡Compártelo con nuestra comunidad!
-                </p>
-            </header>
-            
-            <form id="formulario-nuevo-producto" class="formulario-producto" novalidate>
+                <p class="descripcion-formulario">¿Tienes un producto único? ¡Compártelo con nuestra comunidad!</p>
+            </div>
+            <!-- Form with proper labeling for accessibility -->
+            <form id="formulario-nuevo-producto" class="formulario-producto">
                 <div class="grupo-campos-principales">
                     <div class="campo-formulario">
-                        <label for="input-nombre" class="etiqueta-campo">📝 Nombre del Producto *</label>
-                        <input type="text" id="input-nombre" name="nombre" class="input-texto" 
-                               placeholder="Ej: iPhone 15 Pro Max" required>
-                        <span class="mensaje-error" id="error-nombre"></span>
+                        <label for="nombre-producto" class="etiqueta-campo">📝 Nombre del Producto *</label>
+                        <input type="text" id="nombre-producto" name="nombre" class="input-texto" required>
+                        <span class="mensaje-error"></span>
                     </div>
-                    
                     <div class="campo-formulario">
-                        <label for="input-precio" class="etiqueta-campo">💰 Precio *</label>
-                        <input type="number" id="input-precio" name="precio" class="input-numero" 
-                               placeholder="1000" min="1000" step="0.01" required>
-                        <span class="mensaje-error" id="error-precio"></span>
+                        <label for="precio-producto" class="etiqueta-campo">💰 Precio *</label>
+                        <input type="number" id="precio-producto" name="precio" class="input-numero" min="1000" required>
+                        <span class="mensaje-error"></span>
                     </div>
                 </div>
-                
                 <div class="grupo-campos-secundarios">
                     <div class="campo-formulario">
-                        <label for="input-imagen" class="etiqueta-campo">🖼️ URL de la Imagen *</label>
-                        <input type="url" id="input-imagen" name="imagen" class="input-url" 
-                               placeholder="https://ejemplo.com/imagen.jpg" required>
-                        <span class="mensaje-error" id="error-imagen"></span>
+                        <label for="imagen-producto" class="etiqueta-campo">🖼️ URL de la Imagen *</label>
+                        <input type="url" id="imagen-producto" name="imagen" class="input-url" required>
+                        <span class="mensaje-error"></span>
                     </div>
-                    
                     <div class="campo-formulario">
-                        <label for="input-categoria" class="etiqueta-campo">🏷️ Categoría *</label>
-                        <input type="text" id="input-categoria" name="categoria" class="input-texto" 
-                               placeholder="Ej: Electronics, Clothing, Books" required>
-                        <span class="mensaje-error" id="error-categoria"></span>
+                        <label for="categoria-producto" class="etiqueta-campo">🏷️ Categoría *</label>
+                        <input type="text" id="categoria-producto" name="categoria" class="input-texto" required>
+                        <span class="mensaje-error"></span>
                     </div>
                 </div>
-                
                 <div class="grupo-campos-adicionales">
                     <div class="campo-formulario">
-                        <label for="input-marca" class="etiqueta-campo">🔖 Marca *</label>
-                        <input type="text" id="input-marca" name="marca" class="input-texto" 
-                               placeholder="Ej: Apple, Samsung, Nike" required>
-                        <span class="mensaje-error" id="error-marca"></span>
+                        <label for="marca-producto" class="etiqueta-campo">🔖 Marca *</label>
+                        <input type="text" id="marca-producto" name="marca" class="input-texto" required>
+                        <span class="mensaje-error"></span>
                     </div>
-                    
                     <div class="campo-formulario campo-descripcion">
-                        <label for="input-descripcion" class="etiqueta-campo">📄 Descripción *</label>
-                        <textarea id="input-descripcion" name="descripcion" class="textarea-descripcion" 
-                                placeholder="Describe las características principales del producto..." 
-                                rows="3" required></textarea>
-                        <span class="mensaje-error" id="error-descripcion"></span>
+                        <label for="descripcion-producto" class="etiqueta-campo">📄 Descripción *</label>
+                        <textarea id="descripcion-producto" name="descripcion" class="textarea-descripcion" required></textarea>
+                        <span class="mensaje-error"></span>
                     </div>
                 </div>
-                
                 <div class="acciones-formulario">
-                    <button type="reset" class="boton-limpiar">
-                        🧹 Limpiar Formulario
-                    </button>
-                    <button type="submit" class="boton-agregar">
-                        ✨ Agregar Artículo
-                    </button>
+                    <button type="reset" class="boton-limpiar">🧹 Limpiar Formulario</button>
+                    <button type="submit" class="boton-agregar">✨ Agregar Artículo</button>
                 </div>
             </form>
         </section>
     </main>
 
-    <!-- Footer de la página -->
+    <!--footer for the entire page, with navigation and copyright -->
     <footer class="footer-principal">
         <div class="contenido-footer">
             <div class="info-empresa">
                 <h3>FakeStore</h3>
                 <p>Tu tienda online de confianza desde 2025</p>
             </div>
-            <div class="enlaces-rapidos">
+            <!-- Nav element for footer links, enhancing semantic navigation -->
+            <nav class="enlaces-rapidos">
                 <a href="#" class="enlace-footer">Términos y Condiciones</a>
                 <a href="#" class="enlace-footer">Política de Privacidad</a>
                 <a href="#" class="enlace-footer">Contacto</a>
-            </div>
+            </nav>
         </div>
         <div class="copyright">
-            <p>&copy; 2025 Tienda FakeStore. Todos los derechos reservados.</p>
+            © 2025 Tienda FakeStore. Todos los derechos reservados.
         </div>
     </footer>
-
-    <!-- Contenedor para notificaciones -->
-    <div id="contenedor-notificaciones" class="contenedor-notificaciones"></div>
-
-    <!-- Scripts - Importante el orden de carga -->
-    <script src="js/notificaciones.js"></script>
-    <script src="js/productos.js"></script>
-    <script src="js/carrito.js"></script>
-    <script src="js/formulario.js"></script>
-    <script src="js/main.js"></script>
 </body>
 </html>
