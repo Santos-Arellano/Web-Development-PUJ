@@ -1,0 +1,6 @@
+# Ignorar dataset grande local (no versionar)
+R_project_Check/delitos_mun_2015_2025.csv
+
+# Opcional: archivos intermedios locales grandes (ajusta según necesidad)
+# R_project_Check/panel_puebla_2015_2025_raw.csv
+# R_project_Check/event_study_*.pdf
