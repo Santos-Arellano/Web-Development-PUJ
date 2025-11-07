@@ -18,7 +18,7 @@ set.seed(21)
 DATA_DIR <- "/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check"
 # setwd(DATA_DIR)  # opcional
 
-# Entradas (solo tu CSV de delitos + alarmas si lo tienes)
+# Entradas
 delitos_file <- file.path(DATA_DIR, "delitos_mun_2015_2025.csv")
 alarmas_file <- file.path(DATA_DIR, "alarmas.csv")  # se crea ejemplo si no existe
 
@@ -28,6 +28,7 @@ out_panel        <- file.path(DATA_DIR, "panel_puebla_2015_2025.csv")
 out_modelo       <- file.path(DATA_DIR, "modelos_alarmas.html")
 out_modelo55     <- file.path(DATA_DIR, "modelos_alarmas_win55.html")
 out_pois_nooff   <- file.path(DATA_DIR, "modelos_alarmas_pois_nooffset.html")
+out_twfe         <- file.path(DATA_DIR, "modelos_alarmas_twfe.html")
 plot_event_all   <- file.path(DATA_DIR, "event_study_full.pdf")
 plot_event_win   <- file.path(DATA_DIR, "event_study_win55.pdf")
 out_diag_year    <- file.path(DATA_DIR, "diag_feminicidios_por_anio.csv")
@@ -55,6 +56,26 @@ first_col_any <- function(df, patterns, default = NA_character_) {
   default
 }
 
+# --- NUEVO: elegir de forma robusta la columna de NOMBRE de municipio ---
+pick_mun_name_col <- function(df) {
+  # candidatos que suelen ser nombre textual
+  cand <- names(dplyr::select(df, tidyselect::matches(
+    "(^|_)nom_?mun(icipio)?$|(^|_)municipio_?nombre$|(^|_)nombre_?mun(icipio)?$|(^|_)municipio$|(^|_)mun(icipio)?$"
+  )))
+  # quitar el cve/código si se coló en cand
+  cod_col <- first_col_any(df, c("(^|_)cve_?mun(icipio)?$","(^|_)cve_?mnpio$","(cve|clave|codigo).*mun"))
+  cand <- setdiff(cand, cod_col)
+  # escoger el primero que tenga letras (no sea puro dígito)
+  for (c in cand) {
+    v <- df[[c]]
+    if (is.factor(v)) v <- as.character(v)
+    if (is.character(v)) {
+      if (any(grepl("[A-Za-zÁÉÍÓÚÑáéíóúñ]", v), na.rm = TRUE)) return(c)
+    }
+  }
+  NA_character_
+}
+
 # =========================================================
 # 1) CARGAR Y LIMPIAR DELITOS (Puebla 2015–2025)
 # =========================================================
@@ -65,9 +86,9 @@ delitos_raw <- tryCatch(
 ) %>% janitor::clean_names()
 stopifnot(nrow(delitos_raw) > 0)
 
-# Detectar columnas relevantes
-nm_mun    <- first_col_any(delitos_raw, c("(^|_)mun(icipio)?$","(^|_)nom_?mun(icipio)?$","(^|_)municipio_?nombre$"))
-nm_cod    <- first_col_any(delitos_raw, c("(^|_)cve_?mun(icipio)?$","(^|_)cve_?mnpio$","(^|_)cvegeo(_mun)?$","(cve|clave|codigo).*mun","(^|_)id_?(mun|municipio)$"))
+# Detectar columnas
+nm_cod    <- first_col_any(delitos_raw, c("(^|_)cve_?mun(icipio)?$","(^|_)cve_?mnpio$","(^|_)cvegeo(_mun)?$","(cve|clave|codigo).*mun"))
+nm_mun_nm <- pick_mun_name_col(delitos_raw)  # nombre textual (robusto)
 nm_edo    <- first_col_any(delitos_raw, c("(^|_)estado$","(^|_)entidad(_federativa)?$"))
 nm_cveent <- first_col_any(delitos_raw, c("(^|_)cve_?ent($|_)","(^|_)entidad_?id$"))
 nm_anio   <- first_col_any(delitos_raw, c("^anio$","^ano$","año","(^|_)year$","(^|_)periodo$","(^|_)fecha$"))
@@ -84,23 +105,22 @@ mes_cols <- names(dplyr::select(
 delitos_std <- delitos_raw %>%
   mutate(
     anio = if (!is.na(nm_anio)) as.integer(substr(as.character(.data[[nm_anio]]), 1, 4)) else NA_integer_,
-    municipio = if (!is.na(nm_mun)) as.character(.data[[nm_mun]]) else NA_character_,
     cve_mun = if (!is.na(nm_cod))
       stringr::str_pad(stringr::str_extract(as.character(.data[[nm_cod]]), "\\d+"), 5, pad = "0")
-      else as.character(municipio),
+      else NA_character_,
+    mun_nombre_raw = if (!is.na(nm_mun_nm)) as.character(.data[[nm_mun_nm]]) else NA_character_,
     estado  = if (!is.na(nm_edo)) as.character(.data[[nm_edo]]) else NA_character_,
     cve_ent = if (!is.na(nm_cveent)) suppressWarnings(as.integer(stringr::str_extract(as.character(.data[[nm_cveent]]), "\\d+"))) else NA_integer_
   ) %>%
   mutate(
-    municipio = dplyr::coalesce(stringr::str_squish(municipio), cve_mun),
-    estado    = dplyr::coalesce(estado, "Puebla")
+    estado  = dplyr::coalesce(estado, "Puebla")
   )
 
-# Feminicidios
+# Feminicidios (explícito o suma de meses para "Feminicidio")
 if (!is.na(nm_fem)) {
   msg_ok("Usando columna explícita de 'feminicidios'.")
   delitos_fem <- delitos_std %>%
-    transmute(municipio, cve_mun, estado, cve_ent, anio,
+    transmute(cve_mun, mun_nombre_raw, estado, cve_ent, anio,
               feminicidios = suppressWarnings(as.integer(.data[[nm_fem]])))
 } else if (length(mes_cols) >= 1 && (!is.na(nm_tipo) || !is.na(nm_subtp))) {
   msg_ok("Detectada base mensual por delito; filtrando 'Feminicidio' y sumando meses.")
@@ -117,12 +137,12 @@ if (!is.na(nm_fem)) {
     filter(es_fem) %>%
     mutate(across(all_of(mes_cols), ~ suppressWarnings(as.numeric(.x)))) %>%
     rowwise() %>% mutate(feminicidios = sum(c_across(all_of(mes_cols)), na.rm = TRUE)) %>% ungroup() %>%
-    transmute(municipio, cve_mun, estado, cve_ent, anio, feminicidios = as.integer(feminicidios))
+    transmute(cve_mun, mun_nombre_raw, estado, cve_ent, anio, feminicidios = as.integer(feminicidios))
 } else {
   stop("No se pudo identificar 'feminicidios' ni (meses + tipo/subtipo).")
 }
 
-# Filtro Puebla y años (2015–2025) + columnas para exponer
+# Filtro Puebla + años, y construir etiquetas limpias
 has_cveent <- !all(is.na(delitos_fem$cve_ent))
 delitos_pue <- delitos_fem %>%
   filter(dplyr::between(anio, 2015L, 2025L)) %>%
@@ -130,71 +150,72 @@ delitos_pue <- delitos_fem %>%
     if (has_cveent) filter(., cve_ent == 21L) else
       filter(., stringr::str_detect(tolower(estado), "puebla") | estado %in% c("21","021","Puebla","puebla"))
   } %>%
-  group_by(municipio, cve_mun, anio) %>%
-  summarise(feminicidios = sum(feminicidios, na.rm = TRUE), .groups = "drop") %>%
   mutate(
-    cve_mun         = if_else(stringr::str_detect(cve_mun, "^\\d+$"), stringr::str_pad(cve_mun, 5, pad = "0"), cve_mun),
-    municipio       = as.character(municipio),
-    estado          = "Puebla",
-    feminicidios    = as.integer(replace_na(feminicidios, 0L)),
-    municipio_texto = stringr::str_to_title(municipio, locale = "es"),
-    mun_id_nombre   = paste0(cve_mun, " \u2013 ", municipio_texto)
+    cve_mun = stringr::str_pad(as.character(cve_mun), 5, pad = "0"),
+    municipio_texto = dplyr::case_when(
+      !is.na(mun_nombre_raw) & grepl("[A-Za-zÁÉÍÓÚÑáéíóúñ]", mun_nombre_raw) ~
+        stringr::str_to_title(stringr::str_squish(mun_nombre_raw), locale = "es"),
+      TRUE ~ NA_character_
+    ),
+    municipio_texto = if_else(is.na(municipio_texto), paste0("Cód. ", cve_mun), municipio_texto),
+    mun_id_nombre   = paste0(cve_mun, " – ", municipio_texto)
   ) %>%
-  select(municipio, cve_mun, estado, anio, feminicidios, municipio_texto, mun_id_nombre)
+  group_by(cve_mun, municipio_texto, mun_id_nombre, anio) %>%
+  summarise(feminicidios = sum(feminicidios, na.rm = TRUE), .groups = "drop") %>%
+  mutate(estado = "Puebla") %>%
+  # para compatibilidad con tu layout previo
+  rename(municipio = cve_mun) %>%  # 'municipio' era el campo primero; lo dejamos como código
+  relocate(municipio, .before = 1) %>%
+  rename(cve_mun = municipio)
 
 stopifnot(nrow(delitos_pue) > 0)
 readr::write_csv(delitos_pue, out_delitos)
 msg_ok(paste0("Guardado: ", out_delitos))
 
 # Diagnósticos simples
-delitos_pue %>%
-  count(anio, wt = feminicidios, name = "feminicidios_totales") %>%
+delitos_pue %>% count(anio, wt = feminicidios, name = "feminicidios_totales") %>%
   arrange(anio) %>% readr::write_csv(out_diag_year)
 
-delitos_pue %>%
-  group_by(municipio_texto, cve_mun) %>%
+delitos_pue %>% group_by(municipio_texto, cve_mun) %>%
   summarise(fem_total = sum(feminicidios), .groups="drop") %>%
-  arrange(desc(fem_total)) %>%
-  slice_head(n = 20) %>%
+  arrange(desc(fem_total)) %>% slice_head(n = 20) %>%
   readr::write_csv(out_diag_top)
-
 msg_ok("Exportados diagnósticos (por año y top municipios).")
 
 # =========================================================
-# 2) PANEL (fix a tu error: unimos ETIQUETAS DESPUÉS de expandir)
+# 2) PANEL con etiquetas correctas
 # =========================================================
 msg_step("Armando panel 2015–2025 (con etiquetas listas)")
-mun_ref <- delitos_pue %>%
-  distinct(cve_mun, estado, municipio, municipio_texto, mun_id_nombre)
+mun_ref <- delitos_pue %>% distinct(cve_mun, estado, municipio_texto, mun_id_nombre)
 
 panel <- delitos_pue %>%
   select(cve_mun, anio, feminicidios) %>%
-  tidyr::complete(cve_mun, anio = 2015:2025, fill = list(feminicidios = 0L)) %>%
+  complete(cve_mun, anio = 2015:2025, fill = list(feminicidios = 0L)) %>%
   left_join(mun_ref, by = "cve_mun") %>%
   mutate(
     estado          = coalesce(estado, "Puebla"),
-    municipio_texto = stringr::str_to_title(coalesce(municipio_texto, municipio), locale = "es"),
-    mun_id_nombre   = paste0(cve_mun, " \u2013 ", municipio_texto)
+    mun_id_nombre   = paste0(cve_mun, " – ", municipio_texto)
   ) %>%
-  select(municipio, municipio_texto, mun_id_nombre, cve_mun, estado, anio, feminicidios) %>%
+  # columna 'municipio' solo por compatibilidad (texto)
+  mutate(municipio = municipio_texto) %>%
+  select(municipio, cve_mun, estado, anio, feminicidios, municipio_texto, mun_id_nombre) %>%
   arrange(cve_mun, anio)
 
 readr::write_csv(panel, out_panel)
 msg_ok(paste0("Guardado panel: ", out_panel))
 
 # =========================================================
-# 3) TRATAMIENTO (alarmas) y columnas para exponer
+# 3) TRATAMIENTO (alarmas) y columnas útiles para exponer
 # =========================================================
 if (!file.exists(alarmas_file)) {
   cat("\nℹ Creando ejemplo 'alarmas.csv' en: ", alarmas_file, " (EDÍTALO con tus fechas reales)\n", sep = "")
-  ejemplo_alarmas <- panel %>%
-    distinct(cve_mun) %>%
+  ejemplo_alarmas <- panel %>% distinct(cve_mun) %>%
     mutate(anio_instalacion = sample(c(2017:2022, NA_integer_), size = dplyr::n(), replace = TRUE))
   readr::write_csv(ejemplo_alarmas, alarmas_file)
 }
 
 alarmas <- readr::read_csv(alarmas_file, show_col_types = FALSE) %>%
-  janitor::clean_names() %>%
+  clean_names() %>%
   transmute(
     cve_mun = stringr::str_pad(as.character(cve_mun), 5, pad = "0"),
     anio_instalacion = as.integer(anio_instalacion)
@@ -212,7 +233,7 @@ panel2 <- panel %>%
     )
   )
 
-# Top 2025 para exponer (etiquetas + estatus)
+# Top 2025 para exponer
 panel2 %>%
   filter(anio == 2025) %>%
   arrange(desc(feminicidios)) %>%
@@ -221,78 +242,59 @@ panel2 %>%
   readr::write_csv(out_exponer_2025)
 
 # =========================================================
-# 4) DiD con evento (Sun & Abraham) – FE municipio y año
+# 4) Event-study (Sun & Abraham) + tablas/plots
 # =========================================================
 msg_step("Estimación DiD con evento (fixest)")
-has_treated <- any(!is.na(panel2$anio_instalacion))
-if (!has_treated) stop("Todos los 'anio_instalacion' son NA. Edita 'alarmas.csv' con años reales.")
+stopifnot(any(!is.na(panel2$anio_instalacion)))
 
-# OLS con FE (conteos)
-fml <- feminicidios ~ sunab(anio_instalacion, anio, ref.p = -1)
-m_es <- fixest::feols(
-  fml,
+fml_es <- feminicidios ~ sunab(anio_instalacion, anio, ref.p = -1)
+m_es <- feols(fml_es, data = panel2, fixef = c("cve_mun","anio"), cluster = "cve_mun")
+print(summary(m_es))
+pdf(plot_event_all, width = 8, height = 5); try(iplot(m_es), silent = TRUE); dev.off()
+modelsummary(list("Event study (Sun-Abraham) – OLS" = m_es), output = out_modelo)
+msg_ok(paste0("Tabla exportada: ", out_modelo))
+
+# =========================================================
+# 4b) TWFE simple (lo que pediste): FE por municipio y año
+# =========================================================
+msg_step("Regresión TWFE (FE municipio y año)")
+m_twfe <- feols(
+  feminicidios ~ tiene_alarma,
   data    = panel2,
   fixef   = c("cve_mun","anio"),
   cluster = "cve_mun"
 )
-print(summary(m_es))
-pdf(plot_event_all, width = 8, height = 5); try(iplot(m_es), silent = TRUE); dev.off()
-msg_ok(paste0("Gráfico ES (full) exportado: ", plot_event_all))
-modelsummary::modelsummary(list("Event study (Sun-Abraham) – OLS" = m_es), output = out_modelo)
-msg_ok(paste0("Tabla exportada: ", out_modelo))
+print(summary(m_twfe))
+modelsummary(list("TWFE – OLS (FE mun & año)" = m_twfe), output = out_twfe)
+msg_ok(paste0("Tabla exportada: ", out_twfe))
 
 # =========================================================
-# 5) Ventana de evento [-5, +5] + pruebas conjuntas
+# 5) Ventana [-5, +5] y pruebas conjuntas
 # =========================================================
 msg_step("ES con ventana de evento [-5, +5] + pruebas conjuntas")
 panel2_event <- panel2 %>%
   mutate(et = anio - anio_instalacion) %>%
   filter(is.na(anio_instalacion) | dplyr::between(et, -5, 5))
 
-m_es_short <- fixest::feols(
+m_es_short <- feols(
   feminicidios ~ sunab(anio_instalacion, anio, ref.p = -1),
-  data = panel2_event,
-  fixef = c("cve_mun","anio"),
-  cluster = "cve_mun"
+  data = panel2_event, fixef = c("cve_mun","anio"), cluster = "cve_mun"
 )
 print(summary(m_es_short))
 pdf(plot_event_win, width = 8, height = 5); try(iplot(m_es_short), silent = TRUE); dev.off()
-msg_ok(paste0("Gráfico ES (ventana [-5,5]) exportado: ", plot_event_win))
-modelsummary::modelsummary(list("ES ventana [-5,5] – OLS" = m_es_short), output = out_modelo55)
+modelsummary(list("ES ventana [-5,5] – OLS" = m_es_short), output = out_modelo55)
 msg_ok(paste0("Tabla exportada: ", out_modelo55))
 
-# Wald PRE/POST
-coef_names <- names(coef(m_es_short))
-event_k <- function(x) { k <- stringr::str_extract(x, "(?<=anio::)-?\\d+"); suppressWarnings(as.integer(k)) }
-k_vals  <- vapply(coef_names, event_k, integer(1))
-is_event <- !is.na(k_vals)
-lead_coefs <- coef_names[is_event & k_vals <= -1]
-post_coefs <- coef_names[is_event & k_vals >=  0]
-if (length(lead_coefs) >= 1) {
-  cat("\n== Wald PRE (leads=0) ==\n")
-  print(fixest::wald(m_es_short, paste(lead_coefs, "= 0")))
-}
-if (length(post_coefs) >= 1) {
-  cat("\n== Wald POST (lags=0) ==\n")
-  print(fixest::wald(m_es_short, paste(post_coefs, "= 0")))
-  R <- matrix(0, nrow = 1, ncol = length(coef(m_es_short))); colnames(R) <- names(coef(m_es_short))
-  R[1, post_coefs] <- 1 / length(post_coefs)
-  cat("\n== Wald PROMEDIO POST (prom(lags)=0) ==\n")
-  print(fixest::wald(m_es_short, R = R, r = 0))
-}
-
 # =========================================================
-# 6) Poisson FE SIN offset (respaldo para conteos raros)
+# 6) Poisson FE SIN offset (respaldo)
 # =========================================================
 msg_step("Poisson FE sin offset (respaldo)")
-m_pois_nooff <- fixest::fepois(
+m_pois_nooff <- fepois(
   feminicidios ~ sunab(anio_instalacion, anio, ref.p = -1),
-  data    = panel2,
-  fixef   = c("cve_mun","anio"),
-  cluster = "cve_mun"
+  data = panel2, fixef = c("cve_mun","anio"), cluster = "cve_mun"
 )
 print(summary(m_pois_nooff))
-modelsummary::modelsummary(list("Poisson FE (sin offset)" = m_pois_nooff), output = out_pois_nooff)
+modelsummary(list("Poisson FE (sin offset)" = m_pois_nooff), output = out_pois_nooff)
 msg_ok(paste0("Tabla exportada: ", out_pois_nooff))
 
 cat("\n✅ Listo para exponer. Revisa:\n- ", out_delitos,
@@ -300,6 +302,7 @@ cat("\n✅ Listo para exponer. Revisa:\n- ", out_delitos,
     "\n- ", out_exponer_2025,
     "\n- ", out_modelo,
     "\n- ", out_modelo55,
+    "\n- ", out_twfe,
     "\n- ", out_pois_nooff,
     "\n- ", plot_event_all,
     "\n- ", plot_event_win, "\n", sep = "")
