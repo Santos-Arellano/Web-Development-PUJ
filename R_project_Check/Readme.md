@@ -1,314 +1,285 @@
-# README — Evaluación del efecto de “alarmas” sobre feminicidios en municipios de Puebla (2015–2025)
+# README — Evaluación del efecto de **alarmas** sobre feminicidios en municipios de Puebla (2015–2025)
 
-> Proyecto en R que:
->
-> 1. limpia y estandariza una base de **delitos municipales**,
-> 2. construye un **panel 2015–2025** para Puebla,
-> 3. arma etiquetas legibles de municipio (**“código – nombre”**),
-> 4. une el **año de instalación de alarmas** y
-> 5. estima el efecto con **event-study (Sun & Abraham)** y un **TWFE** (efectos fijos por municipio y año).
->    Incluye salidas en CSV, HTML y PDF listas para exponer.
+Proyecto en **R** que:
+
+1. limpia y estandariza una base de **delitos municipales** (tu CSV),
+2. construye un **panel 2015–2025** para **Puebla**,
+3. agrega etiquetas legibles de municipio (**“código – nombre”**),
+4. integra **población femenina municipal (ITER 2020 Puebla)** para calcular **tasas por 100 mil**,
+5. une el **año de instalación de alarmas** y
+6. estima el efecto con **Event Study (Sun & Abraham)** y **TWFE** (efectos fijos por municipio y año).
+
+Incluye salidas **CSV/HTML/PDF/PNG** listas para exponer y un **gráfico de tendencias** (tratados vs. controles).
+
+---
+
+## 0) TL;DR (arranque rápido)
+
+1. Asegúrate de tener esta estructura (ajusta `DATA_DIR` si usas otra ruta):
+
+```
+/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check/
+  ├── delitos_mun_2015_2025.csv
+  ├── alarmas.csv                     # opcional (si no, se crea ejemplo)
+  └── iter_21_cpv2020/
+      ├── catalogos/tam_loc.csv.csv
+      ├── conjunto_de_datos/conjunto_de_datos_iter_21CSV20.csv
+      ├── diccionario_datos/diccionario_datos_iter_21CSV20.csv
+      └── metadatos/metadatos_iter_21_cpv2020.txt
+```
+
+2. Abre el **script** que te pasé (el último que generamos con ITER + tasas).
+3. Verifica que `DATA_DIR` apunte a la carpeta anterior.
+4. Ejecuta todo el script.
+5. Revisa las salidas (ver sección **5**).
 
 ---
 
 ## 1) Requisitos
 
-* **R** (>= 4.1 recomendado).
-* Paquetes CRAN: `dplyr`, `tidyr`, `stringr`, `readr`, `janitor`, `lubridate`, `fixest`, `modelsummary`, `tidyselect`.
-* Un archivo **delitos_mun_2015_2025.csv** con información municipal (ver “Entradas”).
-* (Opcional) **alarmas.csv** con el **año de instalación** por municipio (**cve_mun**).
+* **R** (≥ 4.1 recomendado).
+* Paquetes CRAN:
+  `dplyr`, `tidyr`, `stringr`, `readr`, `janitor`, `lubridate`, `fixest`, `modelsummary`, `tidyselect`, `ggplot2`, `scales`.
 
-> El script instala automáticamente cualquier paquete faltante desde CRAN.
+  > El script los **instala automáticamente** si faltan.
+* Archivos de entrada mínimos:
 
----
-
-## 2) Estructura mínima de carpetas
-
-```
-tu_proyecto/
-  ├── delitos_mun_2015_2025.csv     # TU base de delitos (obligatoria)
-  ├── alarmas.csv                   # Años de instalación por municipio (opcional)
-  ├── script.R                      # El script principal (el que te pasé)
-  └── salidas/                      # (opcional) carpeta para salidas
-```
-
-> En el script, cambia `DATA_DIR` si quieres usar otra carpeta.
+  * `delitos_mun_2015_2025.csv` (obligatorio).
+  * Carpeta **ITER Puebla 2020** con las rutas exactas que indicaste (para **población femenina**).
+  * `alarmas.csv` (opcional; si no existe, el script crea un **ejemplo** para que lo edites).
 
 ---
 
-## 3) Archivos de **entrada**
+## 2) Entradas y cómo deben verse
 
-### 3.1. `delitos_mun_2015_2025.csv` (obligatorio)
+### 2.1 `delitos_mun_2015_2025.csv` (obligatorio)
 
-El script es **robusto** a nombres de columna. Busca automáticamente:
+El script es **robusto** a nombres. Detecta automáticamente:
 
-* **Municipio (código):** `cve_mun`, `cve_mnpio`, `cvegeo_mun`, etc.
-* **Municipio (nombre):** `nom_mun`, `municipio_nombre`, `municipio` (si **no** es puro número).
-* **Estado / entidad:** `estado`, `entidad_federativa`, `cve_ent` (si está).
-* **Año:** `anio`, `año`, `year`, `fecha`, `periodo`.
-* **Tipo / subtipo de delito:** `tipo_de_delito`, `subtipo_de_delito` (cuando hay meses).
-* **Feminicidios:** `feminicidios`, `feminicidio(s)`, `victimas_feminicidio`.
-* **Meses** (si la base es mensual tipo SESNSP): `enero`…`diciembre` o `ene`…`dic`.
+* **Municipio (código)**: `cve_mun`, `cve_mnpio`, `cvegeo_mun`, `id_municipio`…
+* **Municipio (texto)**: `nom_mun`, `municipio_nombre`, `municipio` (si trae letras y no solo dígitos).
+* **Estado / entidad**: `estado`, `entidad_federativa`, `cve_ent`…
+* **Año**: `anio`, `año`, `year`, `fecha`, `periodo`.
+* **Tipo/Subtipo**: `tipo_de_delito`, `subtipo_de_delito` (cuando hay meses).
+* **Feminicidios**: `feminicidios`, `feminicidio(s)`, `victimas_feminicidio`.
+* **Meses** (si tu base es mensual, como SESNSP): `enero`…`diciembre` o `ene`…`dic`.
 
-El script detecta si ya hay una columna explícita de **feminicidios** o si debe:
+El script:
 
-* **filtrar** las filas de **Feminicidio** (en tipo/subtipo), y
-* **sumar los 12 meses** para tener totales anuales.
+* usa la columna explícita **feminicidios** si ya existe; o
+* **filtra** “Feminicidio” en tipo/subtipo y **suma los 12 meses**.
 
-> Solo se conserva **Puebla (cve_ent = 21)** y el periodo **2015–2025**.
+Después **filtra Puebla** (cve_ent==21 cuando esté) y **años 2015–2025**.
 
-### 3.2. `alarmas.csv` (opcional)
+### 2.2 ITER Puebla 2020 (obligatorio para tasas)
 
-Debe tener:
+Rutas usadas por el script (las que tú diste):
 
-* `cve_mun` (código municipal de 5 dígitos)
-* `anio_instalacion` (año entre 2015 y 2025)
+* `/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check/iter_21_cpv2020/catalogos/tam_loc.csv.csv`
+* `/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check/iter_21_cpv2020/conjunto_de_datos/conjunto_de_datos_iter_21CSV20.csv`
+* `/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check/iter_21_cpv2020/diccionario_datos/diccionario_datos_iter_21CSV20.csv`
+* `/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check/iter_21_cpv2020/metadatos/metadatos_iter_21_cpv2020.txt`
 
-Si no existe, el script **crea un ejemplo** que debes **editar** con datos reales.
+El script lee el **conjunto de datos** y arma:
 
----
+* `cve_mun` (5 dígitos) desde **CVEGEO** o **ENT+MUN**,
+* `nom_mun` (nombre municipal limpio),
+* **población femenina 2020** `pobfem_2020` (y total 2020 `pobtot_2020`):
 
-## 4) ¿Qué produce el script?
+  * si el archivo trae registros con *ámbito = Municipio*, los usa directo;
+  * si no, **suma localidades** por municipio.
 
-* `delitos_puebla_2015_2025.csv`
-  Panel de feminicidios por **(municipio, año)** con columnas:
+> Nota: El archivo del catálogo se llama `tam_loc.csv.csv` con doble `.csv`. Déjalo así (el script lo acepta). Si lo renombras a `tam_loc.csv` no pasa nada siempre que cambies la ruta en el script.
 
-  * `cve_mun` (código de 5 dígitos)
-  * `municipio_texto` (nombre legible; p. ej., “Acajete”)
-  * `mun_id_nombre` (etiqueta “21001 – Acajete”)
-  * `estado` (siempre “Puebla”)
-  * `anio` (2015–2025)
-  * `feminicidios` (conteo anual)
+### 2.3 `alarmas.csv` (opcional, pero necesario para la evaluación)
 
-* `panel_puebla_2015_2025.csv`
-  Igual que arriba, pero **completo** (se completan ausencias con 0).
-
-* `ejemplo_exposicion_2025.csv`
-  Top de municipios **en 2025** con `mun_id_nombre`, `feminicidios` y estatus de alarma (“pre/post”).
-
-* `modelos_alarmas.html`
-  **Event-study (Sun & Abraham)** con FE de municipio y año; errores agrupados por municipio.
-
-* `modelos_alarmas_win55.html`
-  Event-study **en ventana [-5, +5]** (reduce colinealidad).
-
-* `modelos_alarmas_twfe.html`
-  **TWFE**: regresa `feminicidios ~ tiene_alarma` con FE por municipio y año.
-
-* `modelos_alarmas_pois_nooffset.html`
-  **Poisson FE** (sin offset) por si hay muchos ceros.
-
-* `event_study_full.pdf` y `event_study_win55.pdf`
-  Gráficas del event-study (completo y con ventana).
-
-* Diagnósticos:
-
-  * `diag_feminicidios_por_anio.csv`
-  * `diag_feminicidios_top_municipios.csv`
-
----
-
-## 5) ¿Cómo se ejecuta?
-
-1. Abre `script.R`.
-2. Asegúrate de que `DATA_DIR` apunta a donde está tu `delitos_mun_2015_2025.csv`.
-3. (Opcional) Añade/edita `alarmas.csv` con años reales.
-4. **Corre el script** completo (Ctrl/Cmd + Shift + Enter en RStudio).
-
-> Las salidas se guardan en `DATA_DIR` (o donde indiques).
-
----
-
-## 6) Qué hace el script, paso a paso
-
-1. **Carga e instala** paquetes si faltan.
-2. **Lee y limpia** la base de delitos:
-
-   * Normaliza nombres de columnas (snake_case).
-   * Detecta automáticamente columnas clave (código, nombre, año, estado).
-   * Si **no** hay `feminicidios` explícitos, **filtra** “Feminicidio” y **suma meses**.
-3. **Filtra Puebla** (cve_ent = 21 si existe; si no, por texto) y **2015–2025**.
-4. Crea etiquetas:
-
-   * `municipio_texto` = nombre legible (si no está disponible, usa “Cód. 21001”).
-   * `mun_id_nombre` = `cve_mun – municipio_texto` (p. ej. “21001 – Acajete”).
-5. **Completa panel** con todos los años 2015–2025 por municipio (rellena ceros).
-6. **Une alarmas** por `cve_mun` y crea:
-
-   * `tiene_alarma` (1 si anio ≥ anio_instalacion, 0 en caso contrario o NA).
-   * `estatus_alarma` (“pre”, “post”, “sin info”).
-7. **Estima modelos**:
-
-   * Event-study (**Sun & Abraham**) con FE de municipio y año (`feols`).
-   * **TWFE**: `feminicidios ~ tiene_alarma` con FE por municipio y año.
-   * **Poisson FE** (sin offset) como respaldo.
-     Exporta tablas (HTML) y gráficas (PDF).
-
----
-
-## 7) Diccionario de columnas principales
-
-* **cve_mun**: código municipal (5 dígitos, p. ej., “21001”).
-* **municipio_texto**: nombre del municipio (p. ej., “Acajete”).
-* **mun_id_nombre**: etiqueta “código – nombre” (p. ej., “21001 – Acajete”).
-* **anio**: año 2015–2025.
-* **feminicidios**: conteo anual.
-* **anio_instalacion**: año en que se instaló la alarma (si está).
-* **tiene_alarma**: indicador 1/0 (post-tratamiento).
-* **estatus_alarma**: “Sin info de alarma / Sin alarma (pre) / Con alarma (post)”.
-
----
-
-## 8) Metodología de evaluación
-
-* **TWFE (Two-Way Fixed Effects)**
-  Regresión OLS con **FE por municipio** y **FE por año**:
-  [
-  y_{it} = \beta \cdot \text{tiene_alarma}*{it} + \alpha_i + \gamma_t + \varepsilon*{it}
-  ]
-  donde (y_{it}) son feminicidios en municipio (i) y año (t).
-  Errores agrupados por municipio.
-
-* **Event-Study (Sun & Abraham)**
-  Implementado con `sunab(cohort, time)` en **fixest**:
-
-  * `cohort` = `anio_instalacion` (año de entrada al tratamiento).
-  * `time` = `anio`.
-  * Permite ver **leads** (pre-tendencias) y **lags** (efectos dinámicos).
-  * Se usa `ref.p = -1` como periodo de referencia (año anterior a la instalación).
-
-* **Poisson FE (sin offset)**
-  Útil cuando hay muchos ceros. Si más adelante incorporas **población femenina anual**, cambia a **Poisson con offset** `offset = log(poblacion_femenina)`.
-
----
-
-## 9) Controles adicionales (opcional)
-
-Si consigues bases de **INEGI/CONAPO** con población o PIB municipal anual, puedes:
-
-1. Cargar CONAPO municipal anual (población femenina `pobfem` y total `pobtot`) y unir por `(cve_mun, anio)`.
-2. Construir **tasas**: `tasa_fem_100k = 100000 * feminicidios / pobfem`.
-3. Cargar **PIB municipal** e incluir `log_pib_pc` como control.
-
-Ejemplo (esqueleto):
-
-```r
-conapo <- read_csv("conapo_poblacion_municipal.csv") %>%
-  clean_names() %>%
-  transmute(
-    cve_mun = str_pad(as.character(cve_mun), 5, pad = "0"),
-    anio = as.integer(anio),
-    pobfem = as.numeric(pobfem),
-    pobtot = as.numeric(pobtot)
-  )
-
-pib_mun <- read_csv("pib_municipal_2013_2024.csv") %>%
-  clean_names() %>%
-  transmute(
-    cve_mun = str_pad(as.character(cve_mun), 5, pad = "0"),
-    anio = as.integer(anio),
-    pib = as.numeric(pib)
-  )
-
-panel3 <- panel2 %>%
-  left_join(conapo, by = c("cve_mun","anio")) %>%
-  left_join(pib_mun, by = c("cve_mun","anio")) %>%
-  mutate(
-    tasa_fem_100k = if_else(!is.na(pobfem) & pobfem>0, 1e5 * feminicidios / pobfem, NA_real_),
-    pib_pc        = if_else(!is.na(pib) & !is.na(pobtot) & pobtot>0, pib/pobtot, NA_real_),
-    log_pib_pc    = if_else(!is.na(pib_pc) & pib_pc>0, log(pib_pc), NA_real_)
-  )
-```
-
-Con eso puedes re-estimar:
-
-```r
-m_es_rate <- feols(
-  tasa_fem_100k ~ sunab(anio_instalacion, anio, ref.p = -1) + log_pib_pc,
-  data = panel3, fixef = c("cve_mun","anio"), cluster = "cve_mun"
-)
-```
-
-> **Nota:** si no hay población anual, el script ya corre con conteos (es válido al incluir FE por año y municipio).
-
----
-
-## 10) ¿Por qué me salía el código en `municipio_texto`?
-
-En la base original, algunas columnas rotuladas como “municipio” en realidad traen **el código**.
-El script ahora distingue:
-
-* si el “municipio” **tiene letras**, lo toma como **nombre**;
-* si **no**, asume que es **código** y usa etiquetas tipo **“Cód. 21001”**.
-
-Si **quieres forzar** un catálogo de nombres (recomendado), prepara un CSV con mapping:
+Formato mínimo:
 
 ```csv
-cve_mun,municipio_texto
-21001,Acajete
-21002,Acateno
+cve_mun,anio_instalacion
+21001,2019
+21002,
+21003,2021
 ...
 ```
 
-y júntalo así:
+* `cve_mun`: **5 dígitos** (21001, 21002, …).
+* `anio_instalacion`: año en 2015–2025.
+  Si no existe el archivo, el script **genera uno de ejemplo** (con años aleatorios) para que lo edites.
+
+---
+
+## 3) Cómo correr el proyecto
+
+1. Abre el script completo (el último que te di con **ITER + tasas**).
+2. Revisa la línea `DATA_DIR <- "/Users/santosa/Documents/GitHub/Web-Development-PUJ/R_project_Check"`.
+3. Ejecuta **todo** el script (en RStudio: **Cmd/Ctrl + Shift + Enter**).
+4. Comprueba que **no hay errores**, y revisa las **salidas** (Sección 5).
+
+---
+
+## 4) Qué hace el script (paso a paso)
+
+1. **Carga paquetes** e instala si faltan.
+2. **Lee delitos** y **normaliza** nombres.
+3. Construye **feminicidios anuales** (directo o sumando meses) y **filtra Puebla 2015–2025**.
+4. **Lee ITER Puebla 2020**, identifica/crea `cve_mun`, limpia `nom_mun` y obtiene **población femenina municipal (`pobfem_2020`)**.
+5. **Arma el panel** `(cve_mun × 2015…2025)` y **une** `pobfem_2020`.
+6. Calcula **tasa de feminicidios por 100 mil mujeres**:
+   `tasa_fem_100k = 100000 * feminicidios / pobfem_2020`
+   (denominador **constante 2020** por municipio).
+7. **Une alarmas** y crea indicadores:
+
+   * `ever_tratado` (alguna vez instala),
+   * `tiene_alarma` (1 si `anio >= anio_instalacion`),
+   * `estatus_alarma` (“pre”, “post”, “sin info”).
+8. **Modelos**:
+
+   * **Event Study (Sun & Abraham)** con `sunab(anio_instalacion, anio, ref.p = -1)` y **FE** por municipio y año; clúster por municipio.
+   * **TWFE**: `feminicidios ~ tiene_alarma` con **FE** por municipio y año.
+   * **Poisson FE sin offset** (respaldo) para conteos raros.
+9. **Gráficos**:
+
+   * `event_study_full.pdf` y `event_study_win55.pdf` (ventana [-5,+5]).
+   * **Tendencias tratados vs. controles** en **tasa**: `tendencias_tratado_control_tasa.png/.pdf` (línea vertical en 2019 de referencia).
+10. **Exporta** CSV/HTML/PNG/PDF listos para exponer.
+
+---
+
+## 5) Salidas (qué encontrarás y para qué sirve)
+
+* **Paneles / datos**
+
+  * `delitos_puebla_2015_2025.csv`: feminicidios por municipio–año (Puebla).
+  * `panel_puebla_2015_2025_con_pobfem_tasas.csv`: **panel final** con:
+
+    * `municipio`, `cve_mun`, `estado`, `anio`,
+    * `feminicidios`, `tasa_fem_100k`,
+    * `municipio_texto` (= nombre municipal ITER),
+    * `mun_id_nombre` (ej. “21001 – Acajete”),
+    * `pobfem_2020`, `pobtot_2020`.
+  * `panel_puebla_2015_2025.csv`: versión “simple” (sin pobfem ni tasa) para compatibilidad.
+
+* **Para exponer**
+
+  * `ejemplo_exposicion_2025.csv`: top municipios en **2025** con `mun_id_nombre`, `feminicidios`, `tasa_fem_100k`, `estatus_alarma`.
+
+* **Modelos (tablas HTML)**
+
+  * `modelos_alarmas.html`: **Event Study completo** (OLS + FE).
+  * `modelos_alarmas_win55.html`: Event Study en **ventana [-5,+5]**.
+  * `modelos_alarmas_twfe.html`: **TWFE** (OLS + FE).
+  * `modelos_alarmas_pois_nooffset.html`: **Poisson FE** (sin offset).
+
+* **Gráficas**
+
+  * `event_study_full.pdf` y `event_study_win55.pdf`.
+  * `tendencias_tratado_control_tasa.png` y `.pdf` (promedio de tasa por grupo: “tratados alguna vez” vs. “nunca”).
+
+* **Diagnósticos**
+
+  * `diag_feminicidios_por_anio.csv`: suma por año.
+  * `diag_feminicidios_top_municipios.csv`: top acumulado 2015–2025.
+
+---
+
+## 6) Diccionario de variables (panel con tasas)
+
+| Columna            | Descripción                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `cve_mun`          | Código municipal **INEGI** (5 dígitos).                                              |
+| `municipio_texto`  | Nombre municipal (limpio) tomado de **ITER**.                                        |
+| `mun_id_nombre`    | Etiqueta “**código – nombre**” (ej. “21001 – Acajete”).                              |
+| `estado`           | Siempre “Puebla”.                                                                    |
+| `anio`             | 2015–2025.                                                                           |
+| `feminicidios`     | Conteo anual (delitos).                                                              |
+| `pobfem_2020`      | Población femenina municipal (Censo/ITER 2020).                                      |
+| `pobtot_2020`      | Población total municipal (Censo/ITER 2020).                                         |
+| `tasa_fem_100k`    | `100000 * feminicidios / pobfem_2020`.                                               |
+| `anio_instalacion` | Año en que se instaló la alarma (si existe en `alarmas.csv`).                        |
+| `tiene_alarma`     | 1 si `anio >= anio_instalacion`, 0 si `anio < anio_instalacion` o NA si no hay info. |
+| `estatus_alarma`   | “Sin info de alarma” / “Sin alarma (pre)” / “Con alarma (post)”.                     |
+| `ever_tratado`     | 1 si el municipio alguna vez instala alarma.                                         |
+
+---
+
+## 7) Metodología (muy claro y directo)
+
+### 7.1 TWFE (Two-Way Fixed Effects)
+
+Regresión OLS con efectos fijos por municipio y por año:
+
+[
+y_{it} = \beta \cdot \text{tiene_alarma}*{it} + \alpha_i + \gamma_t + \varepsilon*{it}
+]
+
+* ( y_{it} ): feminicidios (conteo) en municipio (i), año (t).
+* (\alpha_i): FE municipio (absorbe diferencias invariables).
+* (\gamma_t): FE año (choques comunes).
+* Errores **cluster** por municipio.
+
+### 7.2 Event Study (Sun & Abraham)
+
+* `sunab(cohort = anio_instalacion, time = anio, ref.p = -1)` en **fixest**.
+* Muestra **leads** (pre-tendencias) y **lags** (efecto dinámico post-instalación).
+* `ref.p = -1` usa como referencia el año **previo** a la instalación.
+* Se reportan FE por municipio y año, y clúster por municipio.
+
+> Si consigues **población femenina anual** (CONAPO), re-estima en **tasas** o usa **Poisson con offset** `offset = log(pobfem_anual)`.
+
+---
+
+## 8) Gráfico de tendencias (tratados vs. controles)
+
+* Usa **tasas** promediadas por grupo:
+  “Tratados (ever)” = municipios que **alguna vez** instalan alarma;
+  “Controles (never)” = municipios que **nunca** instalan.
+* Línea vertical en **2019** (guía visual del momento típico de instalación; cámbiala si quieres).
+* Archivos: `tendencias_tratado_control_tasa.png/.pdf`.
+
+---
+
+## 9) Personalización
+
+* **Carpeta**: cambia `DATA_DIR`.
+* **Periodo**: edita `complete(cve_mun, anio = 2015:2025, ...)` y el filtro `between(anio, ...)`.
+* **Referencia** event-study: cambia `ref.p = -1`.
+* **Ventana**: ajusta `between(et, -5, 5)`.
+* **Año línea vertical** del gráfico: cambia `geom_vline(xintercept = 2019, ...)`.
+
+---
+
+## 10) Trucos de verificación
+
+* Ver primeras filas del conjunto ITER:
 
 ```r
-cat_puebla <- read_csv("catalogo_municipios_puebla.csv") %>%
-  mutate(cve_mun = str_pad(as.character(cve_mun), 5, pad = "0"),
-         municipio_texto = str_to_title(municipio_texto, locale = "es"))
+readr::read_csv(file.path(DATA_DIR, "iter_21_cpv2020/conjunto_de_datos/conjunto_de_datos_iter_21CSV20.csv"),
+                show_col_types = FALSE) %>% head()
+```
 
-panel2 <- panel2 %>%
-  select(-municipio_texto, -mun_id_nombre) %>%
-  left_join(cat_puebla, by = "cve_mun") %>%
-  mutate(mun_id_nombre = paste0(cve_mun, " – ", municipio_texto))
+* ¿Cuántos municipios con `pobfem_2020` válidos?
+
+```r
+iter_mun %>% summarise(munis = n_distinct(cve_mun), con_pobfem = sum(!is.na(pobfem_2020)))
+```
+
+* Top 2025 para exponer:
+
+```r
+readr::read_csv(file.path(DATA_DIR, "ejemplo_exposicion_2025.csv")) %>% head(10)
 ```
 
 ---
 
-## 11) Errores y advertencias comunes
+## 11) Problemas comunes y cómo resolverlos
 
-* **“The VCOV matrix is not positive semi-definite…”**
-  Suele pasar con muchos ceros o colinealidad. El modelo se “arregla” internamente; reporta de todas formas, pero interpreta con cuidado.
-
-* **“variables removed because of collinearity”**
-  Normal en event-study con cohortes poco pobladas. Usa la **ventana [-5,+5]** para reducir colinealidad.
-
-* **Municipio sin nombre legible**
-  Tu CSV no trae el nombre textual. Usa el **catálogo** (Sección 10).
-
-* **Todos los `anio_instalacion` son NA**
-  Edita `alarmas.csv`. Sin cohortes no hay tratamiento.
-
----
-
-## 12) Personalización rápida
-
-* **Carpeta de trabajo**: cambia `DATA_DIR`.
-* **Período**: modifica `complete(cve_mun, anio = 2015:2025, ...)` y los filtros `between(anio, ...)`.
-* **Periodo de referencia** en event-study: `ref.p = -1` (año anterior).
-* **Ventana**: cambia `between(et, -5, 5)`.
-
----
-
-## 13) Interpretación (muy breve)
-
-* **TWFE**: el coeficiente de `tiene_alarma` es la diferencia promedio en feminicidios **post vs pre**, controlando por efectos fijos del municipio (invariantes en el tiempo) y choques comunes por año.
-* **Event-Study**: revisa que los **leads (k<0)** estén cerca de 0 (pre-tendencias planas). Observa la **trayectoria** de los lags (k≥0) para el efecto dinámico tras la instalación.
-
----
-
-## 14) Reproducibilidad
-
-* Deja **bloqueado** `DATA_DIR` al folder del proyecto.
-* Guarda `sessionInfo()` al final si necesitas anexarlo a un informe.
-* Versiona `alarmas.csv` y cualquier **catálogo** que uses para nombres de municipio.
-
----
-
-## 15) Próximos pasos / mejoras
-
-* Incorporar **CONAPO** (población femenina anual) y re-estimar **tasas** y **Poisson con offset**.
-* Añadir **controles socioeconómicos** (PIB per cápita, urbanización, etc.).
-* Reportar **robusteces**: ventanas alternativas, exclusión de outliers, placebo tests.
+* **`alarmas.csv` no existe** → el script crea un **ejemplo**. **Edita** con años reales.
+* **“variables removed because of collinearity”** → normal con ES. Revisa la versión **ventana [-5,+5]**.
+* **“VCOV no es semi-definida positiva”** → aparece con conteos raros / muchos ceros. Se “arregla” internamente; interpreta con cuidado.
+* **`municipio_texto` sale como código** → ahora tomamos **`nom_mun` de ITER** para nombrar.
+  Si hubiera discrepancias, puedes forzar un catálogo propio y hacer `left_join` por `cve_mun`.
+* **Faltan municipios en ITER** → asegúrate de que el conjunto es el **de Puebla (entidad 21)**.
+  El script arma `cve_mun` con **CVEGEO** o **ENT+MUN**.
 
 ---
