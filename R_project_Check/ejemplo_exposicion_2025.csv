@@ -1,31 +1,31 @@
-mun_id_nombre,cve_mun,municipio_texto,anio,feminicidios,estatus_alarma
-21004 – Acatzingo,21004,Acatzingo,2025,2,Con alarma (post)
-21114 – Puebla,21114,Puebla,2025,2,Con alarma (post)
-21197 – Xicotepec,21197,Xicotepec,2025,2,Con alarma (post)
-21019 – Atlixco,21019,Atlixco,2025,1,Con alarma (post)
-21041 – Cuautlancingo,21041,Cuautlancingo,2025,1,Con alarma (post)
-21072 – Huehuetla,21072,Huehuetla,2025,1,Con alarma (post)
-21106 – Ocoyucan,21106,Ocoyucan,2025,1,Con alarma (post)
-21108 – Oriental,21108,Oriental,2025,1,Con alarma (post)
-21143 – San Salvador El Verde,21143,San Salvador El Verde,2025,1,Con alarma (post)
-21156 – Tehuacán,21156,Tehuacán,2025,1,Con alarma (post)
-21177 – Tlacotepec De Benito Juárez,21177,Tlacotepec De Benito Juárez,2025,1,Sin info de alarma
-21186 – Tlatlauquitepec,21186,Tlatlauquitepec,2025,1,Con alarma (post)
-21192 – Tuzamapan De Galeana,21192,Tuzamapan De Galeana,2025,1,Con alarma (post)
-21194 – Venustiano Carranza,21194,Venustiano Carranza,2025,1,Con alarma (post)
-21001 – Acajete,21001,Acajete,2025,0,Sin info de alarma
-21002 – Acateno,21002,Acateno,2025,0,Con alarma (post)
-21003 – Acatlán,21003,Acatlán,2025,0,Con alarma (post)
-21005 – Acteopan,21005,Acteopan,2025,0,Con alarma (post)
-21006 – Ahuacatlán,21006,Ahuacatlán,2025,0,Sin info de alarma
-21007 – Ahuatlán,21007,Ahuatlán,2025,0,Con alarma (post)
-21008 – Ahuazotepec,21008,Ahuazotepec,2025,0,Con alarma (post)
-21009 – Ahuehuetitla,21009,Ahuehuetitla,2025,0,Con alarma (post)
-21010 – Ajalpan,21010,Ajalpan,2025,0,Con alarma (post)
-21011 – Albino Zertuche,21011,Albino Zertuche,2025,0,Con alarma (post)
-21012 – Aljojuca,21012,Aljojuca,2025,0,Con alarma (post)
-21013 – Altepexi,21013,Altepexi,2025,0,Con alarma (post)
-21014 – Amixtlán,21014,Amixtlán,2025,0,Con alarma (post)
-21015 – Amozoc,21015,Amozoc,2025,0,Con alarma (post)
-21016 – Aquixtla,21016,Aquixtla,2025,0,Con alarma (post)
-21017 – Atempan,21017,Atempan,2025,0,Con alarma (post)
+mun_id_nombre,cve_mun,municipio_texto,anio,feminicidios,tasa_fem_100k,estatus_alarma,pobfem_2020
+21004 – Acatzingo,21004,Acatzingo,2025,2,3.0469226081657528,Con alarma (post),65640
+21114 – Puebla,21114,Puebla,2025,2,0.11328928645875817,Con alarma (post),1765392
+21197 – Xicotepec,21197,Xicotepec,2025,2,2.372873312293857,Con alarma (post),84286
+21019 – Atlixco,21019,Atlixco,2025,1,0.6672805647862701,Con alarma (post),149862
+21041 – Cuautlancingo,21041,Cuautlancingo,2025,1,0.7094060143441896,Con alarma (post),140963
+21072 – Huehuetla,21072,Huehuetla,2025,1,5.741187277528993,Con alarma (post),17418
+21106 – Ocoyucan,21106,Ocoyucan,2025,1,2.247292013124185,Con alarma (post),44498
+21108 – Oriental,21108,Oriental,2025,1,4.88997555012225,Con alarma (post),20450
+21143 – San Salvador El Verde,21143,San Salvador El Verde,2025,1,2.789400278940028,Con alarma (post),35850
+21156 – Tehuacã¡N,21156,Tehuacã¡N,2025,1,0.2891761371851595,Con alarma (post),345810
+21177 – Tlacotepec De Benito Juã¡Rez,21177,Tlacotepec De Benito Juã¡Rez,2025,1,1.7239595903872014,Sin info de alarma,58006
+21186 – Tlatlauquitepec,21186,Tlatlauquitepec,2025,1,1.7267578394805911,Con alarma (post),57912
+21192 – Tuzamapan De Galeana,21192,Tuzamapan De Galeana,2025,1,16.592002654720424,Con alarma (post),6027
+21194 – Venustiano Carranza,21194,Venustiano Carranza,2025,1,3.3373381391002535,Con alarma (post),29964
+21001 – Acajete,21001,Acajete,2025,0,0,Sin info de alarma,75510
+21002 – Acateno,21002,Acateno,2025,0,0,Con alarma (post),9168
+21003 – Acatlã¡N,21003,Acatlã¡N,2025,0,0,Con alarma (post),40238
+21005 – Acteopan,21005,Acteopan,2025,0,0,Con alarma (post),3248
+21006 – Ahuacatlã¡N,21006,Ahuacatlã¡N,2025,0,0,Sin info de alarma,15380
+21007 – Ahuatlã¡N,21007,Ahuatlã¡N,2025,0,0,Con alarma (post),3204
+21008 – Ahuazotepec,21008,Ahuazotepec,2025,0,0,Con alarma (post),11780
+21009 – Ahuehuetitla,21009,Ahuehuetitla,2025,0,0,Con alarma (post),2301
+21010 – Ajalpan,21010,Ajalpan,2025,0,0,Con alarma (post),77146
+21011 – Albino Zertuche,21011,Albino Zertuche,2025,0,0,Con alarma (post),1998
+21012 – Aljojuca,21012,Aljojuca,2025,0,0,Con alarma (post),6982
+21013 – Altepexi,21013,Altepexi,2025,0,0,Con alarma (post),23480
+21014 – Amixtlã¡N,21014,Amixtlã¡N,2025,0,0,Con alarma (post),5083
+21015 – Amozoc,21015,Amozoc,2025,0,0,Con alarma (post),128794
+21016 – Aquixtla,21016,Aquixtla,2025,0,0,Con alarma (post),9026
+21017 – Atempan,21017,Atempan,2025,0,0,Con alarma (post),30926
